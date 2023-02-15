@@ -18,7 +18,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static("./upload"));
 
 // import all routes
-const usersRoutes = require("./Routes/v1/users.routes")
+const usersRoutes = require("./Routes/v1/users.routes");
+const forgotPasswordRoutes = require("./Routes/v1/forgotPassword.routes");
+const resetPasswordRoutes = require("./Routes/v1/resetPassword.routes");
 
 // routes
 app.use("/api/v1/user", usersRoutes);
@@ -27,13 +29,13 @@ app.use("/api/v1/user", usersRoutes);
 // app.use("/api/v1/shipping", shippingRoutes);
 // app.use("/api/v1/payment", paymentRoutes);
 // // +++++++++++Forgot Password++++++++++++
-// app.use("/api/v1/forgot-password", forgotPasswordRoutes);
-// app.use("/api/v1/reset-password", resetPasswordRoutes);
+app.use("/api/v1/forgot-password", forgotPasswordRoutes);
+app.use("/api/v1/reset-password", resetPasswordRoutes);
 
 app.get("/", async (req, res) => {
   res
     .status(200)
-    .json({ status: "SUCCESS", message: "This is a bossterbd SERVER" });
+    .json({ status: "SUCCESS", message: "This is a booster bd SERVER" });
 });
 
 app.all("*", (req, res) => {
