@@ -107,28 +107,15 @@ const userSchema = mongoose.Schema(
 );
 
 // hash password before adding it on database
-userSchema.pre("save", async function (next) {
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(
-      this.password,
-      "ed08437f8134d9fe7514a93d2cc18538b47bac29b67eb3aeca1c1d3249494ea043fd9a0c640d6fd723616733c515ec1e6a5a37f3cc15616c9f8c7a0401fbbebb"
-    );
-    this.password = hashedPassword;
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
 
-// userSchema.pre("save", function (next) {
-//   const password = this.password;
-//   const hashedPassword = bcrypt.hashSync(password);
-//   console.log('hashedPassword', hashedPassword)
-//   this.password = hashedPassword;
-//   //   , (this.confirmPassword = undefined);
-//   next();
-// });
+userSchema.pre("save", function (next) {
+  const salt = bcrypt.genSaltSync(10);
+  const password = this.password;
+  const hashedPassword = bcrypt.hashSync(password, salt);
+  (this.password = hashedPassword), (this.confirmPassword = undefined);
+  console.log("hashedPassword", hashedPassword);
+  next();
+});
 
 userSchema.methods.comparePassword = function (password, hashedPassword) {
   const isPasswordMatched = bcrypt.compareSync(password, hashedPassword);

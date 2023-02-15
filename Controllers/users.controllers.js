@@ -154,8 +154,6 @@ module.exports.registerUser = async (req, res, next) => {
   try {
     const result = await userService.registerUserService(req.body);
     const token = generateToken(result);
-    console.log("registerUser token", token);
-
     res.status(200).json({
       status: "success",
       code: 200,
