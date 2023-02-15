@@ -1,7 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 
-const UPLOADS_FOLDER = "./upload";
+const UPLOADS_FOLDER = "../upload";
 
 // define the storage
 const storage = multer.diskStorage({

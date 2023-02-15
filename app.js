@@ -15,10 +15,13 @@ app.use(express.json());
 // to get ejs files data
 app.use(express.urlencoded({ extended: false }));
 // to serve upload folders (images)
-// app.use(express.static("./upload"));
+app.use(express.static("./upload"));
+
+// import all routes
+const usersRoutes = require("./Routes/v1/users.routes")
 
 // routes
-// app.use("/api/v1/user", usersRoutes);
+app.use("/api/v1/user", usersRoutes);
 // app.use("/api/v1/products", productRoutes);
 // app.use("/api/v1/reviews", reviewsRoutes);
 // app.use("/api/v1/shipping", shippingRoutes);
@@ -28,7 +31,9 @@ app.use(express.urlencoded({ extended: false }));
 // app.use("/api/v1/reset-password", resetPasswordRoutes);
 
 app.get("/", async (req, res) => {
-  res.send("Hello WORLD This is a CREATIVE AGENCY SERVER");
+  res
+    .status(200)
+    .json({ status: "SUCCESS", message: "This is a bossterbd SERVER" });
 });
 
 app.all("*", (req, res) => {
