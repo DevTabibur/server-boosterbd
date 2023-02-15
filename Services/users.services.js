@@ -9,21 +9,21 @@ const bcrypt = require("bcryptjs");
 //   return User.updateOne({ email: email }, { $set: { role: "admin" } });
 // };
 
-// module.exports.findAUserByMail = async (email) => {
-//   return await User.findOne({ email });
-// };
+module.exports.findAUserByMail = async (email) => {
+  return await User.findOne({ email });
+};
 
-// module.exports.getAllUserService = async (data) => {
-//   return await User.find({});
-// };
+module.exports.getAllUserService = async (data) => {
+  return await User.find({});
+};
 
 module.exports.registerUserService = async (data) => {
   return await User.create(data);
 };
 
-// module.exports.getAUserByIDService = async (id) => {
-//   return await User.findById({ _id: id });
-// };
+module.exports.getAUserByIDService = async (id) => {
+  return await User.findById({ _id: id });
+};
 
 // module.exports.deleteAUserByIDService = async (id) => {
 //   return await User.deleteOne({ _id: id });
@@ -51,3 +51,7 @@ module.exports.registerUserService = async (data) => {
 //     { runValidators: true }
 //   );
 // };
+
+module.exports.userLogOutService = async (id) => {
+  return await User.updateOne({ _id: id }, { $set: { status: "inactive" } });
+};

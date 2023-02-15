@@ -45,34 +45,34 @@ const generateToken = require("../Utils/generateToken");
 //   }
 // };
 
-// module.exports.getAllUser = async (req, res, next) => {
-//   try {
-//     const result = await userService.getAllUserService();
-//     if (result.length > 0) {
-//       res.status(200).json({
-//         status: "success",
-//         code: 200,
-//         message: `Successfully getting ${result.length} users`,
-//         data: result,
-//       });
-//     } else {
-//       res.status(200).json({
-//         status: "success",
-//         code: 200,
-//         message: `Successfully getting ${result.length} users`,
-//         data: [],
-//       });
-//     }
-//   } catch (err) {
-//     res.status(400).json({
-//       status: "failed",
-//       code: 400,
-//       code: 400,
-//       message: "Couldn't get all users",
-//       err: err.message,
-//     });
-//   }
-// };
+module.exports.getAllUser = async (req, res, next) => {
+  try {
+    const result = await userService.getAllUserService();
+    if (result.length > 0) {
+      res.status(200).json({
+        status: "success",
+        code: 200,
+        message: `Successfully getting ${result.length} users`,
+        data: result,
+      });
+    } else {
+      res.status(200).json({
+        status: "success",
+        code: 200,
+        message: `Successfully getting ${result.length} users`,
+        data: [],
+      });
+    }
+  } catch (err) {
+    res.status(400).json({
+      status: "failed",
+      code: 400,
+      code: 400,
+      message: "Couldn't get all users",
+      err: err.message,
+    });
+  }
+};
 
 // module.exports.deleteAUserByID = async (req, res, next) => {
 //   try {
@@ -179,70 +179,88 @@ module.exports.registerUser = async (req, res, next) => {
 //  *5. if password not correct, send res
 //  *6. check if user is active
 //  *7. if not active send res
+//  *8. if account is inactive , then active again, and then give entrance to our site
 //  *8. generate token
 //  *9. send user and token
 //  */
-// module.exports.login = async (req, res, next) => {
-//   try {
-//     const { email, password } = req.body;
-//     if (!email || !password) {
-//       return res.status(401).json({
-//         status: "failed",
-//         code: 401,
-//         error: "Please provide your email & password",
-//       });
-//     }
+module.exports.login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(401).json({
+        status: "failed",
+        code: 401,
+        error: "Please provide your email & password",
+      });
+    }
 
-//     // checking if user is already in our db, or not?
-//     const userExists = await userService.findAUserByMail(email);
-//     // console.log("userExists", userExists);
-//     if (!userExists) {
-//       return res.status(401).json({
-//         status: "failed",
-//         code: 401,
-//         error: "No user found. Please create an account",
-//       });
-//     }
+    // checking if user is already in our db, or not?
+    const userExists = await userService.findAUserByMail(email);
+    // console.log("userExists", userExists);
+    if (!userExists) {
+      return res.status(401).json({
+        status: "failed",
+        code: 401,
+        error: "No user found. Please create an account",
+      });
+    }
 
-//     const isPasswordMatched = userExists.comparePassword(
-//       password,
-//       userExists.password
-//     );
+    const isPasswordMatched = userExists.comparePassword(
+      password,
+      userExists.password
+    );
 
-//     if (!isPasswordMatched) {
-//       return res.status(403).json({
-//         status: "failed",
-//         code: 403,
-//         error: "Password is not correct",
-//       });
-//     }
+    if (!isPasswordMatched) {
+      return res.status(403).json({
+        status: "failed",
+        code: 403,
+        error: "Password is not correct",
+      });
+    }
 
-//     if (userExists.status != "active") {
-//       return res.status(401).json({
-//         status: "failed",
-//         code: 401,
-//         error: "Your'e account is not active yet",
-//       });
-//     }
+    // problem
+    // if (userExists.status != "active") {
+    //   return res.status(401).json({
+    //     status: "failed",
+    //     code: 401,
+    //     error: "Your'e account is not active yet",
+    //   });
+    // }
+    if (userExists.status === "blocked") {
+      return res.status(401).json({
+        status: "failed",
+        code: 401,
+        error: "Your'e account is blocked",
+      });
+    }
 
-//     const token = generateToken(userExists);
-//     const { password: pwd, ...others } = userExists.toObject();
+    if (userExists.status === "inactive") {
+      return await User.updateOne({ _id: userExists?._id }, { $set: { status: "active" } });
+      // return res.status(401).json({
+      //   status: "failed",
+      //   code: 401,
+      //   error: "Your'e account is inactive",
+      // });
+    }
 
-//     res.status(200).json({
-//       status: "success",
-//       code: 200,
-//       message: "successfully logged in",
-//       data: { user: others, token },
-//     });
-//   } catch (err) {
-//     res.status(400).json({
-//       status: "failed",
-//       code: 400,
-//       message: "Couldn't login",
-//       error: err.message,
-//     });
-//   }
-// };
+    const token = generateToken(userExists);
+    const { password: pwd, ...others } = userExists.toObject();
+
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      message: "successfully logged in",
+      data: { user: others, token },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "failed",
+      code: 400,
+      message: "Couldn't login",
+      error: err.message,
+    });
+  }
+};
 
 // // update profile
 // module.exports.UpdateProfileById = async (req, res, next) => {
@@ -340,3 +358,33 @@ module.exports.registerUser = async (req, res, next) => {
 //     });
 //   }
 // };
+
+// user log out and update status into "inactive"
+module.exports.userLogOut = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const status = req.body;
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({
+        status: "failed",
+        code: 400,
+        message: "This id is not valid",
+      });
+    }
+    const result = await userService.userLogOutService(id);
+    console.log("result", result);
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      message: "Successfully getting this user",
+      data: result,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "failed",
+      code: 400,
+      message: "Couldn't get this user",
+      error: error.message,
+    });
+  }
+};

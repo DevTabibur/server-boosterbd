@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv").config();
-const config = require("../Utils/config");
 
 const userSchema = mongoose.Schema(
   {
@@ -92,6 +91,11 @@ const userSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
+    country: {
+      type: String,
+      enum: ["India", "Bangladesh", "America", "Others"],
+      default: "Bangladesh",
+    },
     status: {
       type: String,
       default: "active",
@@ -113,7 +117,6 @@ userSchema.pre("save", function (next) {
   const password = this.password;
   const hashedPassword = bcrypt.hashSync(password, salt);
   (this.password = hashedPassword), (this.confirmPassword = undefined);
-  console.log("hashedPassword", hashedPassword);
   next();
 });
 

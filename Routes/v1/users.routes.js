@@ -18,7 +18,7 @@ router
    * @apiError  (Unauthorized 401)  Unauthorized  Only authenticated person can access the data
    * @apiError  (Forbidden 403)  Forbidden  Only admin can access the data
    */
-//   .get(verifyToken, userController.getAllUser)
+  .get( userController.getAllUser)
   /**
    * @api {post} / create a new user account
    * @apiDescription create new user account
@@ -29,15 +29,15 @@ router
    */
   .post(userController.registerUser);
 
-// router
-//   .route("/login")
-//   /**
-//    * @api {post} / post exists user
-//    * @apiDescription Login exists user
-//    * @apiPermission anyone can login after register
-//    * @apiSuccess {Object[]} successfully login
-//    * @apiError  User doesn't exists
-//    */ .post(userController.login);
+router
+  .route("/login")
+  /**
+   * @api {post} / post exists user
+   * @apiDescription Login exists user
+   * @apiPermission anyone can login after register
+   * @apiSuccess {Object[]} successfully login
+   * @apiError  User doesn't exists
+   */ .post(userController.login);
 
 // router.get("/me", verifyToken, userController.getMe);
 
@@ -112,5 +112,10 @@ router
 //    * @apiError  (Forbidden 403)  Forbidden  Only authenticated person can access the data
 //    */
 //   .delete(verifyToken, authorization("admin"), userController.deleteAUserByID);
+
+// user logout and update status into inactive
+router
+  .route("/register/updateStatus/:id")
+  .put(userController.userLogOut)
 
 module.exports = router;
