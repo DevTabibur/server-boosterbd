@@ -235,7 +235,10 @@ module.exports.login = async (req, res, next) => {
     }
 
     if (userExists.status === "inactive") {
-      return await User.updateOne({ _id: userExists?._id }, { $set: { status: "active" } });
+      return await User.updateOne(
+        { _id: userExists?._id },
+        { $set: { status: "active" } }
+      );
       // return res.status(401).json({
       //   status: "failed",
       //   code: 401,
@@ -263,44 +266,44 @@ module.exports.login = async (req, res, next) => {
 };
 
 // // update profile
-// module.exports.UpdateProfileById = async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-//     if (!ObjectId.isValid(id)) {
-//       return res.status(400).json({
-//         status: "failed",
-//         code: 400,
-//         message: "Id is not valid",
-//       });
-//     }
-//     const result = await userService.UpdateProfileByIdService(
-//       id,
-//       req.body,
-//       req.file
-//     );
-//     if (result.modifiedCount > 0) {
-//       res.status(200).json({
-//         status: "success",
-//         code: 200,
-//         message: "successfully update profile",
-//         data: result,
-//       });
-//     } else {
-//       res.status(400).json({
-//         status: "failed",
-//         code: 400,
-//         message: "Couldn't update profile",
-//       });
-//     }
-//   } catch (error) {
-//     res.status(400).json({
-//       status: "failed",
-//       code: 400,
-//       message: "Couldn't update profile",
-//       error: error.message,
-//     });
-//   }
-// };
+module.exports.UpdateProfileById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({
+        status: "failed",
+        code: 400,
+        message: "Id is not valid",
+      });
+    }
+    const result = await userService.UpdateProfileByIdService(
+      id,
+      req.body,
+      req.file
+    );
+    if (result.modifiedCount > 0) {
+      res.status(200).json({
+        status: "success",
+        code: 200,
+        message: "successfully update profile",
+        data: result,
+      });
+    } else {
+      res.status(400).json({
+        status: "failed",
+        code: 400,
+        message: "Couldn't update profile",
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      status: "failed",
+      code: 400,
+      message: "Couldn't update profile",
+      error: error.message,
+    });
+  }
+};
 
 // // change password
 // module.exports.changePassword = async (req, res, next) => {
@@ -372,7 +375,7 @@ module.exports.userLogOut = async (req, res, next) => {
       });
     }
     const result = await userService.userLogOutService(id);
-    console.log("result", result);
+    // console.log("result", result);
     res.status(200).json({
       status: "success",
       code: 200,

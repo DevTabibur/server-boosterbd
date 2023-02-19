@@ -81,10 +81,17 @@ const userSchema = mongoose.Schema(
       type: String,
       // validate: [validator.isURL, "Please provide a valid image"],
     },
+    nidFile: {
+      type: String,
+    },
     bin: {
       type: String,
     },
+    binFile: { type: String },
     tin: {
+      type: String,
+    },
+    tinFile: {
       type: String,
     },
     bio: {

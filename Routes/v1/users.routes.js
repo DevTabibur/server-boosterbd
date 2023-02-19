@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../../Controllers/users.controllers");
-const { verifyAdmin } = require("../../middleware/verifyAdmin");
-const uploader = require("../../middleware/uploader");
+const { verifyAdmin } = require("../../Middleware/verifyAdmin");
+const uploader = require("../../Middleware/uploader");
 const verifyToken = require("../../Middleware/verifyToken");
 const authorization = require("../../Middleware/authorization");
 
@@ -18,7 +18,7 @@ router
    * @apiError  (Unauthorized 401)  Unauthorized  Only authenticated person can access the data
    * @apiError  (Forbidden 403)  Forbidden  Only admin can access the data
    */
-  .get( userController.getAllUser)
+  .get(userController.getAllUser)
   /**
    * @api {post} / create a new user account
    * @apiDescription create new user account
@@ -88,20 +88,21 @@ router
    * @apiPermission everyone can see their profile with their register id
    */
   .get(userController.getAUserByID)
-//   /**
-//    * @api {put} / update profile
-//    * @apiDescription update user's and admin's profile
-//    * @apiPermission everyone can update their profile with their register id
-//    * @apiHeader {string} Authorization User's access token
-//    * @apiSuccess {Object[]} update successful
-//    * @apiError  (Unauthorized 401)  Unauthorized  Only authenticated person can access the data
-//    * @apiError  (Forbidden 403)  Forbidden  Only authenticated person can access the data
-//    */
-//   .put(
-//     verifyToken,
-//     uploader.single("imageURL"),
-//     userController.UpdateProfileById
-//   )
+  /**
+   * @api {put} / update profile
+   * @apiDescription update user's and admin's profile
+   * @apiPermission everyone can update their profile with their register id
+   * @apiHeader {string} Authorization User's access token
+   * @apiSuccess {Object[]} update successful
+   * @apiError  (Unauthorized 401)  Unauthorized  Only authenticated person can access the data
+   * @apiError  (Forbidden 403)  Forbidden  Only authenticated person can access the data
+   */
+  .put(
+    verifyToken,
+    // uploader.single("imageURL"),
+    uploader.single("imageURL"),
+    userController.UpdateProfileById
+  );
 //   /**
 //    * @api {delete} / delete a user
 //    * @apiDescription update user's and admin's profile
@@ -114,8 +115,6 @@ router
 //   .delete(verifyToken, authorization("admin"), userController.deleteAUserByID);
 
 // user logout and update status into inactive
-router
-  .route("/register/updateStatus/:id")
-  .put(userController.userLogOut)
+router.route("/register/updateStatus/:id").put(userController.userLogOut);
 
 module.exports = router;

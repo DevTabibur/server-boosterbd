@@ -49,7 +49,7 @@ module.exports.newPassword = async (req, res, next) => {
     // lets hash the password
     const encryptPassword = await bcrypt.hash(password, 10);
 
-    console.log("encryptPassword", encryptPassword);
+    // console.log("encryptPassword", encryptPassword);
     // update user new password with checking id
     await User.updateOne(
       { _id: id },

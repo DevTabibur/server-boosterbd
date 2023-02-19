@@ -15,16 +15,17 @@ app.use(express.json());
 // to get ejs files data
 app.use(express.urlencoded({ extended: false }));
 // to serve upload folders (images)
-app.use(express.static("./upload"));
+app.use(express.static("./upload"));  
 
 // import all routes
 const usersRoutes = require("./Routes/v1/users.routes");
 const forgotPasswordRoutes = require("./Routes/v1/forgotPassword.routes");
 const resetPasswordRoutes = require("./Routes/v1/resetPassword.routes");
+const productRoutes = require("./Routes/v1/products.routes");
 
 // routes
 app.use("/api/v1/user", usersRoutes);
-// app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/products", productRoutes);
 // app.use("/api/v1/reviews", reviewsRoutes);
 // app.use("/api/v1/shipping", shippingRoutes);
 // app.use("/api/v1/payment", paymentRoutes);

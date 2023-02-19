@@ -29,19 +29,28 @@ module.exports.getAUserByIDService = async (id) => {
 //   return await User.deleteOne({ _id: id });
 // };
 
-// module.exports.UpdateProfileByIdService = async (id, body, file) => {
-//   const data = {
-//     email: body?.email,
-//     contactNumber: body?.contactNumber,
-//     bio: body?.bio,
-//     imageURL: file?.filename,
-//   };
-//   return await User.updateOne(
-//     { _id: id },
-//     { $set: data },
-//     { runValidators: true }
-//   );
-// };
+module.exports.UpdateProfileByIdService = async (id, body, file) => {
+  const data = {
+    email: body?.email,
+    name: body?.name,
+    phoneNumber: body?.phoneNumber,
+    address: body?.address,
+    whatsappNumber: body?.whatsappNumber,
+    behance: body?.behance,
+    companyWebsite: body?.companyWebsite,
+    linkedInProfile: body?.linkedInProfile,
+    githubProfile: body?.githubProfile,
+    nid: body?.nid,
+    tin: body?.tin,
+    bin: body?.bin,
+    imageURL: file?.filename,
+  };
+  return await User.updateOne(
+    { _id: id },
+    { $set: data },
+    { runValidators: true }
+  );
+};
 
 // module.exports.changePasswordService = async (id, data) => {
 //   const hashedPassword = bcrypt.hashSync(data.confirmPassword);
