@@ -7,10 +7,14 @@ const verifyToken = require("../../Middleware/verifyToken");
 
 const productsController = require("../../Controllers/products.controller");
 
-const upload = uploader.fields([{ name: "galleryImage", maxCount: 1 }]);
+const upload = uploader.fields([
+  { name: "galleryImage", maxCount: 1 },
+  { name: "thumbnailImage", maxCount: 1 },
+  { name: "productDescriptionFile", maxCount: 1 },
+]);
 
 router.route("/add-service").post(
-  verifyToken,
+  // verifyToken,
   //   authorization("admin"),
   upload,
   productsController.AddServiceController
