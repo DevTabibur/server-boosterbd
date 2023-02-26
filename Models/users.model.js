@@ -5,35 +5,14 @@ const dotenv = require("dotenv").config();
 
 const userSchema = mongoose.Schema(
   {
-    email: {
+    phoneNumber: {
       type: String,
-      validate: [validator.isEmail, "Please Provide a valid Email"],
-      trim: true,
-      lowercase: true,
-      unique: [true, "This Email is already in use"],
-      required: [true, "Email is required"],
+      required: [true, "Provide a valid phone number"],
     },
     password: {
       type: String,
       required: [true, "Password is required"],
-      //   validate: {
-      //     validator: (value) =>
-      //       validator.isStrongPassword(value, {
-      //         minLength: 6,
-      //       }),
-      //     message: "Password {value} is not strong enough",
-      //   },
     },
-    // confirmPassword: {
-    //   type: String,
-    //   required: [true, "Confirm Password is required"],
-    //   validate: {
-    //     validator: function (value) {
-    //       return value === this.password;
-    //     },
-    //     message: "Password don't match",
-    //   },
-    // },
     role: {
       type: String,
       enum: ["user", "admin", "buyer"],
@@ -41,18 +20,11 @@ const userSchema = mongoose.Schema(
     },
     name: {
       type: String,
-      required: [true, "Name is required"],
       trim: true,
       minLength: [3, "Name is too short"],
       maxLength: [100, "Name is too large"],
     },
-    phoneNumber: {
-      type: String,
-      // validate: [
-      //   validator.isMobilePhone,
-      //   "Please provide a valid mobile number",
-      // ],
-    },
+
     whatsappNumber: {
       type: String,
       // validate: [

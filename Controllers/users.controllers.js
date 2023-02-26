@@ -1,9 +1,15 @@
 const { json } = require("express");
 const { ObjectId } = require("mongodb");
 const { routes } = require("../app");
+const _ = require("lodash");
+const otpGenerator = require("otp-generator");
+const axios = require("axios");
+const bcrypt = require("bcryptjs");
 const User = require("../Models/users.model");
+const Otp = require("../Models/otp.model");
 const userService = require("../Services/users.services");
 const generateToken = require("../Utils/generateToken");
+require("dotenv").config();
 
 // module.exports.getAdmin = async(req, res, next) =>{
 //   try {
@@ -152,13 +158,63 @@ module.exports.getAUserByID = async (req, res, next) => {
 
 module.exports.registerUser = async (req, res, next) => {
   try {
-    const result = await userService.registerUserService(req.body);
-    const token = generateToken(result);
+    console.log("password", req.body.password);
+    const user = await User.findOne({
+      phoneNumber: req.body.phoneNumber,
+    });
+
+    if (user) {
+      return res
+        .status(400)
+        .json({ status: "failed", code: 400, message: "User already exists!" });
+    }
+
+    const OTP = otpGenerator.generate(6, {
+      digits: true,
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
+      specialChars: false,
+    });
+
+    const number = req.body.phoneNumber;
+    const message = `Your OTP is: ${OTP}`;
+    console.log("message", message);
+
+    // try {
+    //   const url = `http://isms.mimsms.com/smsapi?api_key=${process.env.MIM_API_KEY}&type=text&contacts=${number}&senderid=${process.env.MIM_SENDER_ID}&msg=${message}`;
+
+    // axios.post(url).then((data) => {
+    //   if (data.status === 200) {
+    //     console.log("otp sent");
+    //   }
+    // });
+    // } catch (error) {
+    //   console.log('otp didnot sent', error)
+    // }
+    const url = `http://isms.mimsms.com/smsapi?api_key=${process.env.MIM_API_KEY}&type=text&contacts=${number}&senderid=${process.env.MIM_SENDER_ID}&msg=${message}`;
+
+    axios.post(url).then((data) => {
+      try {
+        if (data.status === 200) {
+          console.log("otp sent");
+        }
+      } catch (error) {
+        console.log("otp did not sent", error);
+      }
+    });
+
+    const otp = new Otp({ phoneNumber: req.body.phoneNumber, otp: OTP });
+    const salt = await bcrypt.genSalt(10);
+    otp.otp = await bcrypt.hash(otp.otp, salt);
+
+    const result = await otp.save();
+    // console.log("result", result);
+
     res.status(200).json({
       status: "success",
       code: 200,
-      message: "User is registered successfully",
-      data: { result, token },
+      message: "Otp send successfully!",
+      data: result,
     });
   } catch (error) {
     res.status(400).json({
@@ -167,6 +223,62 @@ module.exports.registerUser = async (req, res, next) => {
       message: "Couldn't register user",
       err: error.message,
     });
+  }
+};
+
+module.exports.verifyOtp = async (req, res) => {
+  try {
+    // const result = await userService.registerUserService(req.body);
+    // const token = generateToken(result);
+    const otpHolder = await Otp.find({
+      phoneNumber: req.body.phoneNumber,
+    });
+    if (otpHolder.length === 0) {
+      return res.status(400).json({
+        status: "failed",
+        code: 400,
+        message: "Your'e using an Expired OTP!",
+      });
+    }
+
+    const rightOtpFind = otpHolder[otpHolder.length - 1];
+    const validUser = await bcrypt.compare(req.body.otp, rightOtpFind.otp);
+    console.log("validUser", validUser);
+
+    if (rightOtpFind.phoneNumber === req.body.phoneNumber && validUser) {
+      console.log("render");
+
+      const salt = await bcrypt.genSalt(10);
+
+      const password = await bcrypt.hash(req.body.password, salt);
+
+      console.log("password", password);
+
+      const user = new User(_.pick(req.body, ["phoneNumber", "password"]));
+      console.log("user", user);
+      const token = generateToken(user);
+      const result = await user.save();
+      const OTPDelete = await Otp.deleteMany({
+        number: rightOtpFind.number,
+      });
+      return res.status(200).send({
+        status: "success",
+        code: 200,
+        message: "User Registration Successful!",
+        data: { result, token },
+      });
+    } else {
+      return res.status(400).send("Your OTP was wrong!");
+    }
+  } catch (error) {
+    res
+      .status(400)
+      .json({
+        status: "failed",
+        code: 400,
+        message: "OTP Didn't verified",
+        error: error.message,
+      });
   }
 };
 

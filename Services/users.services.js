@@ -18,6 +18,7 @@ module.exports.getAllUserService = async (data) => {
 };
 
 module.exports.registerUserService = async (data) => {
+  console.log('data', data)
   return await User.create(data);
 };
 
