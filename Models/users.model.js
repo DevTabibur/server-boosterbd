@@ -21,8 +21,11 @@ const userSchema = mongoose.Schema(
     name: {
       type: String,
       trim: true,
-      minLength: [3, "Name is too short"],
-      maxLength: [100, "Name is too large"],
+    },
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true
     },
 
     whatsappNumber: {
@@ -42,6 +45,9 @@ const userSchema = mongoose.Schema(
       type: String,
     },
     githubProfile: {
+      type: String,
+    },
+    completionRate: {
       type: String,
     },
     address: String,
@@ -78,7 +84,12 @@ const userSchema = mongoose.Schema(
     status: {
       type: String,
       default: "active",
-      enum: ["active", "inactive", "blocked"],
+      enum: ["active", "inactive", "blocked", "disable"],
+    },
+    profile: {
+      type: String,
+      default: "unverified",
+      enum: ["unverified", "verified", "completed", "disabled", "closed", "blocked"],
     },
     passwordChangedAt: Date,
     passwordResetToken: String,

@@ -41,28 +41,28 @@ router
 
 // router.get("/me", verifyToken, userController.getMe);
 
-// router
-//   .route("/register/admin/:email")
-//   /**
-//    * @api {get} / get admin collection
-//    * @apiDescription Get All admin
-//    * @apiPermission anyone could be checked if he is admin or not
-//    * @apiHeader {string} Authorization User's access token
-//    * @apiSuccess {Object[]} all the admins
-//    * @apiError  (Unauthorized 401)  Unauthorized  Only authenticated person can access the data
-//    * @apiError  (Forbidden 403)  Forbidden  Only admin can access the data
-//    */
-//   .get(verifyToken, userController.getAdmin)
-//   /**
-//    * @api {put} / update an admin
-//    * @apiDescription make a user an Admin
-//    * @apiPermission only admin can access this
-//    * @apiHeader {string} Authorization User's access token
-//    * @apiSuccess {Object[]} all the admins
-//    * @apiError  (Unauthorized 401)  Unauthorized  Only authenticated person can access the data
-//    * @apiError  (Forbidden 403)  Forbidden  Only admin can access the data
-//    */
-//   .put(verifyToken, authorization("admin"), userController.makeUserAdmin);
+router
+  .route("/register/admin/:email")
+  /**
+   * @api {get} / get admin collection
+   * @apiDescription Get All admin
+   * @apiPermission anyone could be checked if he is admin or not
+   * @apiHeader {string} Authorization User's access token
+   * @apiSuccess {Object[]} all the admins
+   * @apiError  (Unauthorized 401)  Unauthorized  Only authenticated person can access the data
+   * @apiError  (Forbidden 403)  Forbidden  Only admin can access the data
+   */
+  .get(verifyToken, userController.getAdmin)
+  /**
+   * @api {put} / update an admin
+   * @apiDescription make a user an Admin
+   * @apiPermission only admin can access this
+   * @apiHeader {string} Authorization User's access token
+   * @apiSuccess {Object[]} all the admins
+   * @apiError  (Unauthorized 401)  Unauthorized  Only authenticated person can access the data
+   * @apiError  (Forbidden 403)  Forbidden  Only admin can access the data
+   */
+  .put(verifyToken, authorization("admin"), userController.makeUserAdmin);
 
 // router
 //   .route("/register/change-password/:id")
@@ -99,9 +99,9 @@ router
    * @apiError  (Forbidden 403)  Forbidden  Only authenticated person can access the data
    */
   .put(
-    verifyToken,
+    // verifyToken,
     // uploader.single("imageURL"),
-    uploader.single("imageURL"),
+    uploader.fields([{ name: "imageURL", maxCount: 1 }, { name: "binFile", maxCount: 1 }, { name: "tinFile", maxCount: 1 }, { name: "nidFile", maxCount: 1 },]),
     userController.UpdateProfileById
   );
 //   /**
@@ -114,6 +114,9 @@ router
 //    * @apiError  (Forbidden 403)  Forbidden  Only authenticated person can access the data
 //    */
 //   .delete(verifyToken, authorization("admin"), userController.deleteAUserByID);
+
+
+router.route("/register2/:id").put(userController.makeUserVerified)
 
 // user logout and update status into inactive
 router.route("/register/updateStatus/:id").put(userController.userLogOut);

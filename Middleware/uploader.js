@@ -28,7 +28,7 @@ const uploader = multer({
   // dest: UPLOADS_FOlDER,
   storage: storage,
   limits: {
-    fileSize: 5000000, // 5mb
+    fileSize: 5000000, // 2mb
   },
 
   fileFilter: (req, file, cb) => {
@@ -40,7 +40,7 @@ const uploader = multer({
     ) {
       cb(null, true);
     } else {
-      cb(null, false);
+      cb(null, true);
       return cb(new Error("Only .jpg, .png, .jpeg formats are allowed"));
     }
   },

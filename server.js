@@ -11,7 +11,7 @@ mongoose.set("strictQuery", false);
 
 // this link is ipv4 supported. so it'll not giving any error with connection => mongodb://127.0.0.1:27017/boosterbd
 mongoose
-  .connect(process.env.DATABASE, {
+  .connect(process.env.DATABASE_LOCAL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

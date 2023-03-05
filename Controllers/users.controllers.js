@@ -11,25 +11,25 @@ const userService = require("../Services/users.services");
 const generateToken = require("../Utils/generateToken");
 require("dotenv").config();
 
-// module.exports.getAdmin = async(req, res, next) =>{
-//   try {
-//     const { email } = req.params;
-//     const result = await userService.getAdminService(email);
-//     res.status(200).json({
-//       status: "success",
-//       code: 200,
-//       message: "successfully getting an Admin",
-//       data: result,
-//     });
-//   } catch (error) {
-//     res.status(400).json({
-//       status: "failed",
-//       code: 400,
-//       message: "Couldn't get an Admin",
-//       error: error.message,
-//     });
-//   }
-// }
+module.exports.getAdmin = async (req, res, next) => {
+  try {
+    const { email } = req.params;
+    const result = await userService.getAdminService(email);
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      message: "successfully getting an Admin",
+      data: result,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "failed",
+      code: 400,
+      message: "Couldn't get an Admin",
+      error: error.message,
+    });
+  }
+}
 
 // module.exports.getMe = async (req, res, next) => {
 //   try {
@@ -111,6 +111,7 @@ module.exports.getAllUser = async (req, res, next) => {
 module.exports.getAUserByID = async (req, res, next) => {
   try {
     const { id } = req.params;
+    // console.log('id', id)
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({
         status: "failed",
@@ -135,39 +136,39 @@ module.exports.getAUserByID = async (req, res, next) => {
   }
 };
 
-// module.exports.makeUserAdmin = async (req, res, next) => {
-//   try {
-//     const { email } = req.params;
-//     console.log('makeUserAdmin', email)
-//     const result = await userService.makeUserAdminService(email);
-//     // res.status(200).json({
-//     //   status: "success",
-//     //   code: 200,
-//     //   message: "Successfully make this user an ADMIN",
-//     //   data: result,
-//     // });
-//   } catch (error) {
-//     res.status(400).json({
-//       status: "failed",
-//       code: 400,
-//       message: "Couldn't make an Admin",
-//       error: error.message,
-//     });
-//   }
-// };
+module.exports.makeUserAdmin = async (req, res, next) => {
+  try {
+    const { email } = req.params;
+    console.log('makeUserAdmin', email)
+    const result = await userService.makeUserAdminService(email);
+    // res.status(200).json({
+    //   status: "success",
+    //   code: 200,
+    //   message: "Successfully make this user an ADMIN",
+    //   data: result,
+    // });
+  } catch (error) {
+    res.status(400).json({
+      status: "failed",
+      code: 400,
+      message: "Couldn't make an Admin",
+      error: error.message,
+    });
+  }
+};
 
 module.exports.registerUser = async (req, res, next) => {
   try {
-    console.log("password", req.body.password);
+    // console.log("password", req.body);
     const user = await User.findOne({
       phoneNumber: req.body.phoneNumber,
     });
 
-    if (user) {
-      return res
-        .status(400)
-        .json({ status: "failed", code: 400, message: "User already exists!" });
-    }
+    // if (user) {
+    //   return res
+    //     .status(400)
+    //     .json({ status: "failed", code: 400, message: "User already exists!" });
+    // }
 
     const OTP = otpGenerator.generate(6, {
       digits: true,
@@ -177,8 +178,8 @@ module.exports.registerUser = async (req, res, next) => {
     });
 
     const number = req.body.phoneNumber;
-    const message = `Your OTP is: ${OTP}`;
-    console.log("message", message);
+    const message = `Your BoosterBD OTP is: ${OTP}`;
+    // console.log("message", message);
 
     // try {
     //   const url = `http://isms.mimsms.com/smsapi?api_key=${process.env.MIM_API_KEY}&type=text&contacts=${number}&senderid=${process.env.MIM_SENDER_ID}&msg=${message}`;
@@ -193,15 +194,19 @@ module.exports.registerUser = async (req, res, next) => {
     // }
     const url = `http://isms.mimsms.com/smsapi?api_key=${process.env.MIM_API_KEY}&type=text&contacts=${number}&senderid=${process.env.MIM_SENDER_ID}&msg=${message}`;
 
-    axios.post(url).then((data) => {
-      try {
-        if (data.status === 200) {
-          console.log("otp sent");
-        }
-      } catch (error) {
-        console.log("otp did not sent", error);
+    try {
+      const response = await axios({
+        method: 'post',
+        url,
+        timeout: 5000, // Timeout after 5 seconds
+      });
+
+      if (response.status === 200) {
+        console.log('otp sent');
       }
-    });
+    } catch (error) {
+      console.log('otp did not send', error.message);
+    }
 
     const otp = new Otp({ phoneNumber: req.body.phoneNumber, otp: OTP });
     const salt = await bcrypt.genSalt(10);
@@ -226,6 +231,8 @@ module.exports.registerUser = async (req, res, next) => {
   }
 };
 
+
+
 module.exports.verifyOtp = async (req, res) => {
   try {
     // const result = await userService.registerUserService(req.body);
@@ -243,19 +250,19 @@ module.exports.verifyOtp = async (req, res) => {
 
     const rightOtpFind = otpHolder[otpHolder.length - 1];
     const validUser = await bcrypt.compare(req.body.otp, rightOtpFind.otp);
-    console.log("validUser", validUser);
+    // console.log("validUser", validUser);
 
     if (rightOtpFind.phoneNumber === req.body.phoneNumber && validUser) {
-      console.log("render");
+      // console.log("render");
 
       const salt = await bcrypt.genSalt(10);
 
       const password = await bcrypt.hash(req.body.password, salt);
 
-      console.log("password", password);
+      // console.log("password", password);
 
       const user = new User(_.pick(req.body, ["phoneNumber", "password"]));
-      console.log("user", user);
+      // console.log("user", user);
       const token = generateToken(user);
       const result = await user.save();
       const OTPDelete = await Otp.deleteMany({
@@ -380,6 +387,8 @@ module.exports.login = async (req, res, next) => {
 // // update profile
 module.exports.UpdateProfileById = async (req, res, next) => {
   try {
+    // console.log('files', req.files)
+    // console.log('body', req.body)
     const { id } = req.params;
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -391,7 +400,7 @@ module.exports.UpdateProfileById = async (req, res, next) => {
     const result = await userService.UpdateProfileByIdService(
       id,
       req.body,
-      req.file
+      req.files
     );
     if (result.modifiedCount > 0) {
       res.status(200).json({
@@ -503,3 +512,25 @@ module.exports.userLogOut = async (req, res, next) => {
     });
   }
 };
+
+// make a user verified
+module.exports.makeUserVerified = async (req, res, next) => {
+  try {
+    // console.log('body',req.body)
+    const {id} = req.params;
+    const result = await userService.makeUserVerifiedService(id, req.body);
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      message: "successfully make this user verified",
+      data: result
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: "failed",
+      code: 400,
+      message: "make a user verified is failed",
+      error: error?.message
+    })
+  }
+}

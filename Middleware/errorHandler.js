@@ -3,7 +3,7 @@ const errorHandler = (err, req, res, next) => {
     status: "failed",
     code: 400,
     message: "Something went wrong",
-    err: err.message,
+    error: err.message,
   });
 };
 module.exports = errorHandler;
