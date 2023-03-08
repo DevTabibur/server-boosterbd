@@ -13,8 +13,8 @@ require("dotenv").config();
 
 module.exports.getAdmin = async (req, res, next) => {
   try {
-    const { email } = req.params;
-    const result = await userService.getAdminService(email);
+    const { id } = req.params;
+    const result = await userService.getAdminService(id);
     res.status(200).json({
       status: "success",
       code: 200,
@@ -517,7 +517,7 @@ module.exports.userLogOut = async (req, res, next) => {
 module.exports.makeUserVerified = async (req, res, next) => {
   try {
     // console.log('body',req.body)
-    const {id} = req.params;
+    const { id } = req.params;
     const result = await userService.makeUserVerifiedService(id, req.body);
     res.status(200).json({
       status: "success",

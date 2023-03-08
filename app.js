@@ -24,12 +24,14 @@ const resetPasswordRoutes = require("./Routes/v1/resetPassword.routes");
 const productRoutes = require("./Routes/v1/products.routes");
 const adAccountRoutes = require("./Routes/v1/adAccount.routes");
 const adLimitRequestRoutes = require("./Routes/v1/adLimitRequests.routes");
+const topUpRoutes = require("./Routes/v1/topUp.routes");
 
 // routes
 app.use("/api/v1/user", usersRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/ad-account", adAccountRoutes);
 app.use("/api/v1/ad-limit-request", adLimitRequestRoutes);
+app.use("/api/v1/top-up", topUpRoutes);
 // app.use("/api/v1/reviews", reviewsRoutes);
 // app.use("/api/v1/shipping", shippingRoutes);
 // app.use("/api/v1/payment", paymentRoutes);

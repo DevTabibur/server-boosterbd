@@ -42,7 +42,7 @@ router
 // router.get("/me", verifyToken, userController.getMe);
 
 router
-  .route("/register/admin/:email")
+  .route("/register/admin/:id")
   /**
    * @api {get} / get admin collection
    * @apiDescription Get All admin
@@ -52,7 +52,7 @@ router
    * @apiError  (Unauthorized 401)  Unauthorized  Only authenticated person can access the data
    * @apiError  (Forbidden 403)  Forbidden  Only admin can access the data
    */
-  .get(verifyToken, userController.getAdmin)
+  .get( userController.getAdmin)
   /**
    * @api {put} / update an admin
    * @apiDescription make a user an Admin
